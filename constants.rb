@@ -13,7 +13,6 @@ class Constants
 							"categoryId" => "491",
 							"updated" => Time.now.to_i.to_s
 				        }],
-				        "limit" => 5
 					},
 					"id" => 98,
 				}.to_json

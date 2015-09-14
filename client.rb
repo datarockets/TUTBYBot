@@ -59,10 +59,9 @@ Telegram::Bot::Client.run(token) do |bot|
 			when '/agenda'
 				bot.track('Пользователь получает новости о культуре', message.chat.id, type_of_chat: message.chat.id)
 
-				news_json = api.request(Constants::AGENDA_PAYLOAD)
-				
-				news = json_body['result'].each do |result|
-					items = news['items']
+				news_json = api.request(Constants::AGENDA_PAYLOAD)	
+				news = news_json['result'].each do |result|
+					items = result['items']
 					items.each do |item|
 						bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
 					end
