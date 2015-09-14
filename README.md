@@ -15,4 +15,4 @@ Yes, it's always accessible by [@tutbybot] nickname.
 > 
 > Constants::TOKEN and Constants::BOTAN_TOKEN are null. You need to obtain your own access tokens.
 
-[@tutbybot] = <http://telegram.me/tutbybot>
+[@tutbybot]: <http://telegram.me/tutbybot>
