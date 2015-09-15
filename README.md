@@ -41,8 +41,5 @@ $ ruby control.rb stop
 > Constants::TOKEN and Constants::BOTAN_TOKEN are NULL. You need to obtain your own access tokens.
 
 [@tutbybot]: <http://telegram.me/tutbybot>
-<<<<<<< HEAD
 [Bot Token]: <http://telegram.me/botfather>
 [Botan Token]: <https://appmetrica.yandex.com>
-=======
->>>>>>> 27c36d5166560f5b1e6d6e050b988cbedd35762c
