@@ -7,8 +7,60 @@ require_relative 'api'
 token = Constants::TOKEN
 botan_token = Constants::BOTAN_TOKEN
 
-# Init API
-api = API.new
+
+# METHODS FOR PARSING AND SENDING DATA BACK TO THE USER
+
+# Passing bot, chat id and response itself
+def sendResponse(bot, id, response)
+  bot.api.sendMessage(chat_id: id, text: response)
+end
+
+# Passing bot, chat id and event title
+def trackEvent(bot, id, event)
+  bot.track(event, id, type_of_chat: id)
+end
+
+# Passing bot, chat id, event title, news category id and special id
+def newsCategoryGetter(bot, chat, title, category, id)
+  trackEvent(bot, chat, title)
+  api = API.new
+  json = api.news_category_request(category, id)      
+  news = json['result'].each do |result|
+    items = result['items']
+    newsSender(items, bot, chat)
+  end
+end
+
+# Passing bot, chat id, event title, news category id
+def lastNewsGetter(bot, chat_id, title, category)
+  trackEvent(bot, chat_id, title)
+  api = API.new
+  json = api.main_request(category)
+  news = json['result']['items']
+  newsSender(news, bot, chat_id)
+end
+
+# Passing bot, chat and event title
+def currenciesGetter(bot, chat_id, title)
+  trackEvent(bot, chat_id, title)
+  api = API.new
+  json = api.finance_request
+  currencies = json['exchangeRates']
+  currenciesSender(currencies, bot, chat_id) 
+end
+
+# Passing array from 5 hashes, bot and chat id 
+def newsSender(news, bot, id)
+  news[0..4].each do |item|
+    sendResponse(bot, id, item['title'] + "\n\n" + item['shortUrl'])
+  end
+end
+
+def currenciesSender(currencies, bot, id)
+  sendResponse(bot, id, currencies[0]['currencyCode'] + ' - ' + currencies[0]['nb'] + "\n" + currencies[1]['currencyCode'] + ' - ' + currencies[1]['nb'] + "\n" + currencies[2]['currencyCode'] + ' - ' + currencies[2]['nb'])
+end
+
+# BOT STARTS WORKING #
 
 Telegram::Bot::Client.run(token) do |bot|
 
@@ -17,209 +69,82 @@ Telegram::Bot::Client.run(token) do |bot|
   
   # Listening to the user's commands
   bot.listen do |message|
+
+    id = message.chat.id
     
     case message.text
-
       # User starts using
       when '/start'
-        bot.track('Новый пользователь', message.chat.id, type_of_chat: message.chat.id)   
-        bot.api.sendMessage(chat_id: message.chat.id, text: Constants::START_USING)
+        trackEvent(bot, 'Новый пользователь', id)   
+        sendResponse(bot, id, Constants::START_USING)
 
       when '/help'
-        bot.track('Помощь', message.chat.id, type_of_chat: message.chat.id)
-        bot.api.sendMessage(chat_id: message.chat.id, text: Constants::HELP)
+        trackEvent(bot, 'Помощь', id)
+        sendResponse(bot, id, Constants::HELP)
 
       when '/author'
-        bot.track('Автор', message.chat.id, type_of_chat: message.chat.id)
-        bot.api.sendMessage(chat_id: message.chat.id, text: Constants::AUTHOR)
+        trackEvent(bot, 'Автор', id)
+        sendResponse(bot, id, Constants::AUTHOR)
 
       # User wants to know the TOP5 of news
       when '/top'
-        bot.track('Топ-5 новостей', message.chat.id, type_of_chat: message.chat.id)
-        
-        
-        news_json = api.main_request("top")
-        news = news_json['result']['items']
-        news.each do |item|
-          bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-        end
+        lastNewsGetter(bot, id, "Топ-5 новостей", "top")
 
       # User wants to know the latest news
       when '/now'
-        bot.track('Последние новости', message.chat.id, type_of_chat: message.chat.id)
-
-        # Getting the news-json and hash it
-        news_json = api.main_request("now")
-        news = news_json['result']['items']
-        
-        # Iterate and send to the user
-        news.each do |item|
-          bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-        end
+        lastNewsGetter(bot, id, "Последние новости", "now")
 
       # Politics
       when '/politics'
-        bot.track('Политика', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("10", 86)
-        
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Политика", "10", 86)
 
       # Economics
       when '/economics'
-        bot.track('Экономика и бизнес', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("9", 39)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Экономика", "9", 39)
 
       # Financial news
       when '/finance'
-        bot.track('Финансы', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("310", 41)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Финансы", "310", 41)
 
       # Society
       when '/society'
-        bot.track('Общество', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("11", 43)
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Общество", "11", 43)
 
       # World news
       when '/world'
-        bot.track('Мировые новости', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("3", 49)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Мировые новости", "3", 49)
 
       # Sports
       when '/sports'
-        bot.track('Спорт', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("6", 53)
-        
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Спорт", "6", 53)
 
       # Culture
       when '/culture'
-        bot.track('Культура', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("5", 57)
-        
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Культура", "5", 57)
 
       # IT-news
       when '/42'
-        bot.track('42', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("15", 65)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "42", "15", 65)
 
       # Automobile news
       when '/auto'
-        bot.track('Автоновости', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("7", 69)
-        
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Автоновости", "7", 69)
 
       # Society
       when '/accidents'
-        bot.track('Происшествия', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("103", 73)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Происшествия", "103", 73)
 
       # Propery
       when '/property'
-        bot.track('Недвижимость', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("486", 79)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
+        newsCategoryGetter(bot, id, "Недвижимость", "486", 79)
 
       # User wants to know agenda
       when '/agenda'
-        bot.track('Культура', message.chat.id, type_of_chat: message.chat.id)
-
-        news_json = api.news_category_request("491", 98)
-
-        news = news_json['result'].each do |result|
-          items = result['items']
-          items[0..4].each do |item|
-            bot.api.sendMessage(chat_id: message.chat.id, text: item['title'] + "\n" + "\n" + item['shortUrl'])
-          end
-        end
-
+        newsCategoryGetter(bot, id, "Афиша", "491", 98)
+        
       # User gets currencies
       when '/kurs'
-        bot.track('Курс валют', message.chat.id, type_of_chat: message.chat.id)
-
-        kurs_json = api.finance_request
-        currencies = kurs_json['exchangeRates']
-
-        bot.api.sendMessage(chat_id: message.chat.id, text: currencies[0]['currencyCode'] + ' - ' + currencies[0]['nb'] + "\n" + currencies[1]['currencyCode'] + ' - ' + currencies[1]['nb'] + "\n" + currencies[2]['currencyCode'] + ' - ' + currencies[2]['nb'] )
+        currenciesGetter(bot, id, "Курсы валют")
 
     end
   end
