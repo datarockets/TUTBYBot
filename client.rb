@@ -24,7 +24,7 @@ end
 def newsCategoryGetter(bot, chat, title, category, id)
   trackEvent(bot, chat, title)
   api = API.new
-  json = api.news_category_request(category, id)      
+  json = api.news_category_handler(category, id)      
   news = json['result'].each do |result|
     items = result['items']
     newsSender(items, bot, chat)
@@ -35,7 +35,7 @@ end
 def lastNewsGetter(bot, chat_id, title, category)
   trackEvent(bot, chat_id, title)
   api = API.new
-  json = api.main_request(category)
+  json = api.main_handler(category)
   news = json['result']['items']
   newsSender(news, bot, chat_id)
 end
@@ -57,7 +57,9 @@ def newsSender(news, bot, id)
 end
 
 def currenciesSender(currencies, bot, id)
-  sendResponse(bot, id, currencies[0]['currencyCode'] + ' - ' + currencies[0]['nb'] + "\n" + currencies[1]['currencyCode'] + ' - ' + currencies[1]['nb'] + "\n" + currencies[2]['currencyCode'] + ' - ' + currencies[2]['nb'])
+  currencies[0..3].each do |currency|
+    sendResponse(bot, id, currency['currencyCode'] + ' - ' + currency['nb'])
+  end
 end
 
 # BOT STARTS WORKING #
