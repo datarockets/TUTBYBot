@@ -1,4 +1,7 @@
 # TUT.BY Telegram Bot
+
+<img src="https://github.com/chyrta/TUTBYBot/blob/master/screenshot.png" alt="alt text" width="30%">
+
 An absolutely simple bot for Telegram Messenger written in one night in Ruby for #1 news website in Belarus
 
 Yes, it's always accessible by [@tutbybot] nickname.
