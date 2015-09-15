@@ -1,4 +1,7 @@
 # TUT.BY Telegram Bot
+
+<img src="https://github.com/chyrta/TUTBYBot/blob/master/screenshot.png" alt="alt text" width="30%">
+
 An absolutely simple bot for Telegram Messenger written in one night in Ruby for #1 news website in Belarus
 
 Yes, it's always accessible by [@tutbybot] nickname.
@@ -38,5 +41,8 @@ $ ruby control.rb stop
 > Constants::TOKEN and Constants::BOTAN_TOKEN are NULL. You need to obtain your own access tokens.
 
 [@tutbybot]: <http://telegram.me/tutbybot>
+<<<<<<< HEAD
 [Bot Token]: <http://telegram.me/botfather>
 [Botan Token]: <https://appmetrica.yandex.com>
+=======
+>>>>>>> 27c36d5166560f5b1e6d6e050b988cbedd35762c
