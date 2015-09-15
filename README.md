@@ -15,6 +15,22 @@ Yes, it's always accessible by [@tutbybot] nickname.
   - Searching by some text query
   - Much cleaner code (now it's awful)
 
+## Usage for learning
+1. Fork it
+2. Obtain your [Bot Token] and [Botan Token] and put in TOKEN and BOTAN_TOKEN variables.
+3. Install necessary gems and run it as a background job.
+
+```sh
+$ bundle install
+$ ruby control.rb start
+```
+
+4. If you want to stop using it, just type:
+
+```sh
+$ ruby control.rb stop
+```
+
 ### Pay attention!
 > The API methods were obtained through decompiling
 > the official TUT.BY Android application.
@@ -22,3 +38,5 @@ Yes, it's always accessible by [@tutbybot] nickname.
 > Constants::TOKEN and Constants::BOTAN_TOKEN are NULL. You need to obtain your own access tokens.
 
 [@tutbybot]: <http://telegram.me/tutbybot>
+[Bot Token]: <http://telegram.me/botfather>
+[Botan Token]: <https://appmetrica.yandex.com>
