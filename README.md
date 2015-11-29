@@ -10,12 +10,12 @@ Yes, it's always accessible by [@tutbybot] nickname.
 
   - Read the latest news from variety of categories like politics, economics and et.c
   - Get the currencies (USD, EUR and BYR)
+  - Searching for news
 
 ## What are the next steps?
-  
+
   - Subscriptions
   - Sending news to the editorial office
-  - Searching by some text query
   - Much cleaner code (now it's awful)
 
 ## Usage for learning
@@ -37,9 +37,9 @@ $ ruby control.rb stop
 ### Pay attention!
 > The API methods were obtained through decompiling
 > the official TUT.BY Android application.
-> 
+>
 > Constants::TOKEN and Constants::BOTAN_TOKEN are NULL. You need to obtain your own access tokens.
 
 [@tutbybot]: <http://telegram.me/tutbybot>
 [Bot Token]: <http://telegram.me/botfather>
-[Botan Token]: <https://appmetrica.yandex.com>
+[Botan Token]: <https://appmetrika.yandex.com>
