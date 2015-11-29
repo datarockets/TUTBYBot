@@ -24,11 +24,26 @@ end
 def newsCategoryGetter(bot, chat, title, category, id)
   trackEvent(bot, chat, title)
   api = API.new
-  json = api.news_category_handler(category, id)      
+  json = api.news_category_handler(category, id)
   news = json['result'].each do |result|
     items = result['items']
     newsSender(items, bot, chat)
   end
+end
+
+# Pass a query to API
+def search_news(bot, chat, query)
+  trackEvent(bot, chat, "Поиск новостей по фразе #{query}")
+  api = API.new
+  response = api.search_news(query)
+  news_ids = []
+  news = response['result']['items']
+  news[0..4].each do |item|
+    news_ids.push(item['id'])
+  end
+  news_json = api.get_news(news_ids)
+  new_json = news_json['result']['items']
+  newsSender(new_json, bot, chat)
 end
 
 # Passing bot, chat id, event title, news category id
@@ -46,10 +61,10 @@ def currenciesGetter(bot, chat_id, title)
   api = API.new
   json = api.finance_request
   currencies = json['exchangeRates']
-  currenciesSender(currencies, bot, chat_id) 
+  currenciesSender(currencies, bot, chat_id)
 end
 
-# Passing array from 5 hashes, bot and chat id 
+# Passing array from 5 hashes, bot and chat id
 def newsSender(news, bot, id)
   news[0..4].each do |item|
     sendResponse(bot, id, item['title'] + "\n\n" + item['shortUrl'])
@@ -68,16 +83,16 @@ Telegram::Bot::Client.run(token) do |bot|
 
   # Let Botan track user's requests
   bot.enable_botan!(botan_token)
-  
+
   # Listening to the user's commands
   bot.listen do |message|
 
     id = message.chat.id
-    
+
     case message.text
       # User starts using
       when '/start'
-        trackEvent(bot, 'Новый пользователь', id)   
+        trackEvent(bot, 'Новый пользователь', id)
         sendResponse(bot, id, Constants::START_USING)
 
       when '/help'
@@ -87,6 +102,19 @@ Telegram::Bot::Client.run(token) do |bot|
       when '/author'
         trackEvent(bot, 'Автор', id)
         sendResponse(bot, id, Constants::AUTHOR)
+
+      # A response for empty query
+      when '/search'
+        trackEvent(bot, 'Попытка поиска', id)
+        sendResponse(bot, id, Constants::TRYSEARCH)
+
+      # User wants to search for some news
+      when /search/i
+        split = message.text.split(" ")
+        unless split[1].nil?
+          query = split[1]
+          search_news(bot, id, query)
+      	end
 
       # User wants to know the TOP5 of news
       when '/top'
@@ -143,7 +171,7 @@ Telegram::Bot::Client.run(token) do |bot|
       # User wants to know agenda
       when '/agenda'
         newsCategoryGetter(bot, id, "Афиша", "491", 98)
-        
+
       # User gets currencies
       when '/kurs'
         currenciesGetter(bot, id, "Курсы валют")

@@ -32,7 +32,31 @@ class API
         json = { "jsonrpc" => "2.0", "method" => "/tutby/top5", "params" => { "limit" => 5 }, "id" => 6 }.to_json
       when 'now'
         json = { "jsonrpc" => "2.0", "method" => "/tutby/news/popular", "params" => { "count" => "5" }, "id" => 4 }.to_json
-    end  
+    end
+    return apiRequest(json)
+  end
+
+  def search_news(query)
+    json = {
+      	"jsonrpc" => "2.0",
+      	"method" => "/tutby/news/search",
+      	"params" => {
+      		"categories" => ["50", "99011", "10", "9", "310", "11", "3", "6", "5", "336", "15", "7", "103", "16", "486", "491", "51"],
+      		"text" => query
+      	}, "id"=> "15"
+    }.to_json
+    return apiRequest(json)
+  end
+
+  def get_news(news_array)
+    json = {
+    	"jsonrpc" => "2.0",
+    	"method" => "/tutby/news/data",
+    	"params" => {
+    		"ids" => news_array
+    	},
+    	"id" => "16"
+    }.to_json
     return apiRequest(json)
   end
 
@@ -55,5 +79,3 @@ class API
   end
 
 end
-
-
