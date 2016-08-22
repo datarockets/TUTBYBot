@@ -20,26 +20,29 @@ Yes, it's always accessible by [@tutbybot] nickname.
 
 ## Usage for learning
 1. Fork it
-2. Obtain your [Bot Token] and [Botan Token] and put in TOKEN and BOTAN_TOKEN variables.
+2. Obtain your [Bot Token] as put it into config.rb
 3. Install necessary gems and run it as a background job.
 
 ```sh
 $ bundle install
-$ ruby control.rb start
+$ ruby app.rb start
 ```
 
 4. If you want to stop using it, just type:
 
 ```sh
-$ ruby control.rb stop
+$ ruby app.rb stop
 ```
 
 ### Pay attention!
 > The API methods were obtained through decompiling
 > the official TUT.BY Android application.
 >
-> Constants::TOKEN and Constants::BOTAN_TOKEN are NULL. You need to obtain your own access tokens.
+> You have to configure your own config.rb in config folder.
 
 [@tutbybot]: <http://telegram.me/tutbybot>
 [Bot Token]: <http://telegram.me/botfather>
-[Botan Token]: <https://appmetrika.yandex.com>
+
+## Credits
+1. Dzmitry Chyrta
+2. Alex Senkov

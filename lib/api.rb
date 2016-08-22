@@ -11,19 +11,19 @@ class API
 
   PORT = '80'
 
-  CONTENT_HEADER = {'Content-Type' => 'application/json'}
-
   def news_category_handler(category_id, id)
     json = {
-              "jsonrpc" => "2.0",
-              "method" => "/tutby/categories/updates_list",
-              "params" => {
-                "items" => [{
-                    "categoryId" => category_id, "updated" => Time.now.to_i.to_s
-                  }]
-              }, "id" => id
-            }.to_json
-    return apiRequest(json)
+      jsonrpc: "2.0",
+      method: "/tutby/categories/updates_list",
+      params: {
+        items: [{
+          categoryId: category_id, 
+          updated: Time.now.to_i.to_s
+        }]
+      }, id: id
+    }.to_json
+
+    apiRequest(json)
   end
 
   def main_handler(type)
@@ -33,7 +33,8 @@ class API
       when 'now'
         json = { "jsonrpc" => "2.0", "method" => "/tutby/news/popular", "params" => { "count" => "5" }, "id" => 4 }.to_json
     end
-    return apiRequest(json)
+
+    apiRequest(json)
   end
 
   def search_news(query)
@@ -45,7 +46,8 @@ class API
       		"text" => query
       	}, "id"=> "15"
     }.to_json
-    return apiRequest(json)
+
+    apiRequest(json)
   end
 
   def get_news(news_array)
@@ -57,14 +59,16 @@ class API
     	},
     	"id" => "16"
     }.to_json
-    return apiRequest(json)
+
+    apiRequest(json)
   end
 
   def apiRequest(json)
-    request = Net::HTTP::Post.new(NEWS_METHOD, initiheader = CONTENT_HEADER)
+    request = Net::HTTP::Post.new(NEWS_METHOD, initiheader = { 'Content-Type' => 'application/json' })
     request.body = json
     response = Net::HTTP.new(NEWS_SERVER, PORT).start {|http| http.request(request)}
-    return JSON.parse(response.body)
+
+    JSON.parse(response.body)
   end
 
   def finance_request
@@ -75,7 +79,7 @@ class API
       'params' => {"country" => "belarus","api-version" => 2,"locale" => "ru","ts" => "0","city_id" => 15800 }
     )
     response = Net::HTTP.new(FINANCE_SERVER, PORT).start {|http| http.request(request)}
-    return JSON.parse(response.body)
-  end
 
+    JSON.parse(response.body)
+  end
 end

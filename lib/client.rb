@@ -1,12 +1,11 @@
 require 'telegram/bot'
-require 'telegram/bot/botan'
-require_relative 'constants'
+require_relative '../config/config.rb'
 require_relative 'api'
+require_relative 'messages'
+
 
 # Obtained tokens from Telegram Botfather and Yandex.AppMetrika
-token = Constants::TOKEN
-botan_token = Constants::BOTAN_TOKEN
-
+token = Config::TOKEN
 
 # METHODS FOR PARSING AND SENDING DATA BACK TO THE USER
 
@@ -15,14 +14,8 @@ def sendResponse(bot, id, response)
   bot.api.sendMessage(chat_id: id, text: response)
 end
 
-# Passing bot, chat id and event title
-def trackEvent(bot, id, event)
-  bot.track(event, id, type_of_chat: id)
-end
-
 # Passing bot, chat id, event title, news category id and special id
 def newsCategoryGetter(bot, chat, title, category, id)
-  trackEvent(bot, chat, title)
   api = API.new
   json = api.news_category_handler(category, id)
   news = json['result'].each do |result|
@@ -33,7 +26,6 @@ end
 
 # Pass a query to API
 def search_news(bot, chat, query)
-  trackEvent(bot, chat, "Поиск новостей по фразе #{query}")
   api = API.new
   response = api.search_news(query)
   news_ids = []
@@ -48,7 +40,6 @@ end
 
 # Passing bot, chat id, event title, news category id
 def lastNewsGetter(bot, chat_id, title, category)
-  trackEvent(bot, chat_id, title)
   api = API.new
   json = api.main_handler(category)
   news = json['result']['items']
@@ -57,7 +48,6 @@ end
 
 # Passing bot, chat and event title
 def currenciesGetter(bot, chat_id, title)
-  trackEvent(bot, chat_id, title)
   api = API.new
   json = api.finance_request
   currencies = json['exchangeRates']
@@ -67,7 +57,7 @@ end
 # Passing array from 5 hashes, bot and chat id
 def newsSender(news, bot, id)
   news[0..4].each do |item|
-    sendResponse(bot, id, item['title'] + "\n\n" + item['shortUrl'])
+    sendResponse(bot, id, "#{item['title']} \n\n #{item['shortUrl']}")
   end
 end
 
@@ -77,12 +67,7 @@ def currenciesSender(currencies, bot, id)
   end
 end
 
-# BOT STARTS WORKING #
-
 Telegram::Bot::Client.run(token) do |bot|
-
-  # Let Botan track user's requests
-  bot.enable_botan!(botan_token)
 
   # Listening to the user's commands
   bot.listen do |message|
@@ -92,21 +77,17 @@ Telegram::Bot::Client.run(token) do |bot|
     case message.text
       # User starts using
       when '/start'
-        trackEvent(bot, 'Новый пользователь', id)
-        sendResponse(bot, id, Constants::START_USING)
+        sendResponse(bot, id, Messages::START_USING)
 
       when '/help'
-        trackEvent(bot, 'Помощь', id)
-        sendResponse(bot, id, Constants::HELP)
+        sendResponse(bot, id, Messages::HELP)
 
       when '/author'
-        trackEvent(bot, 'Автор', id)
-        sendResponse(bot, id, Constants::AUTHOR)
+        sendResponse(bot, id, Messages::AUTHOR)
 
       # A response for empty query
       when '/search'
-        trackEvent(bot, 'Попытка поиска', id)
-        sendResponse(bot, id, Constants::TRYSEARCH)
+        sendResponse(bot, id, Messages::TRYSEARCH)
 
       # User wants to search for some news
       when /search/i
