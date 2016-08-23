@@ -118,7 +118,7 @@ module API
         request.set_form_data params
       end
 
-      request_to_server = Net::HTTP.new(server, Config::PORT)
+      request_to_server = Net::HTTP.new server
       response = request_to_server.start { |http| http.request(request) }
 
       JSON.parse(response.body)
