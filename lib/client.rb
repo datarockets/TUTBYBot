@@ -1,13 +1,9 @@
 require 'telegram/bot'
-require_relative '../config/config.rb'
+require_relative '../config/config'
 require_relative 'api'
 require_relative 'messages'
 
-
-# Obtained tokens from Telegram Botfather and Yandex.AppMetrika
-token = Config::TOKEN
-
-# METHODS FOR PARSING AND SENDING DATA BACK TO THE USER
+include API
 
 # Passing bot, chat id and response itself
 def sendResponse(bot, id, response)
@@ -16,8 +12,7 @@ end
 
 # Passing bot, chat id, event title, news category id and special id
 def newsCategoryGetter(bot, chat, title, category, id)
-  api = API.new
-  json = api.news_category_handler(category, id)
+  json = news_category_handler(category, id)
   news = json['result'].each do |result|
     items = result['items']
     newsSender(items, bot, chat)
@@ -26,30 +21,27 @@ end
 
 # Pass a query to API
 def search_news(bot, chat, query)
-  api = API.new
-  response = api.search_news(query)
+  response = search_news(query)
   news_ids = []
   news = response['result']['items']
   news[0..4].each do |item|
     news_ids.push(item['id'])
   end
-  news_json = api.get_news(news_ids)
+  news_json = get_news(news_ids)
   new_json = news_json['result']['items']
   newsSender(new_json, bot, chat)
 end
 
 # Passing bot, chat id, event title, news category id
 def lastNewsGetter(bot, chat_id, title, category)
-  api = API.new
-  json = api.main_handler(category)
+  json = main_handler(category)
   news = json['result']['items']
   newsSender(news, bot, chat_id)
 end
 
 # Passing bot, chat and event title
 def currenciesGetter(bot, chat_id, title)
-  api = API.new
-  json = api.finance_request
+  json = finance_request
   currencies = json['exchangeRates']
   currenciesSender(currencies, bot, chat_id)
 end
