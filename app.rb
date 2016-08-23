@@ -1,4 +1,6 @@
 require "daemons"
 require_relative 'lib/client'
 
-Daemons.run('client.rb')
+client = Client.new
+
+Daemons.run client
