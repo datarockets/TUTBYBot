@@ -1,23 +1,15 @@
 require 'net/http'
 require 'json'
+require_relative '../config/config'
 
-class API
-
-  NEWS_SERVER = 'news.tut.by'
-  FINANCE_SERVER = 'finance.tut.by'
-
-  NEWS_METHOD = '/exports/android_v2.php'
-  FINANCE_METHOD = '/export/info_for_pda.php'
-
-  PORT = '80'
-
+module API
   def news_category_handler(category_id, id)
     json = {
       jsonrpc: "2.0",
       method: "/tutby/categories/updates_list",
       params: {
         items: [{
-          categoryId: category_id, 
+          categoryId: category_id,
           updated: Time.now.to_i.to_s
         }]
       }, id: id
