@@ -1,7 +1,7 @@
 require 'telegram/bot'
 require_relative '../config/config'
 require_relative 'api'
-require_relative 'messages'
+require 'yaml'
 
 include API
 
@@ -61,6 +61,9 @@ end
 
 class Client
   def initialize
+    
+    messages = YAML::load(IO.read(messages_path))
+
     Telegram::Bot::Client.run(Config::TOKEN) do |bot|
 
       # Listening to the user's commands
@@ -71,17 +74,17 @@ class Client
         case message.text
           # User starts using
           when '/start'
-            sendResponse(bot, id, Messages::START_USING)
+            sendResponse(bot, id, messages['start_using'])
 
           when '/help'
-            sendResponse(bot, id, Messages::HELP)
+            sendResponse(bot, id, messages['help'])
 
           when '/author'
-            sendResponse(bot, id, Messages::AUTHOR)
+            sendResponse(bot, id, messages['author'])
 
           # A response for empty query
           when '/search'
-            sendResponse(bot, id, Messages::TRYSEARCH)
+            sendResponse(bot, id, messages['try_search'])
 
           # User wants to search for some news
           when /search/i
@@ -155,4 +158,11 @@ class Client
       end
     end
   end
+  
+  private 
+
+    def messages_path
+      "config/messages.yml"
+    end
+
 end
