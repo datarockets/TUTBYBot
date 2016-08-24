@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'daemons'
-require_relative 'lib/client'
+require_relative 'bot/client'
 
-client = Client.new
-Daemons.run client
+client = Bot::Client.new
+Daemons.run client.start
