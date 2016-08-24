@@ -51,7 +51,7 @@ module API
     params = {
       jsonrpc: "2.0",
       method: "/tutby/news/search",
-      i: "15",
+      id: "15",
       params: {
         categories: categories,
         text: query
