@@ -26,11 +26,11 @@ module Bot
     private
 
       def token=(value)
-        @token ||= value || Config::TOKEN
+        @token = value || Config::TOKEN
       end
 
       def botan_token=(value)
-        @botan_token ||= value || Config::BOTAN_TOKEN
+        @botan_token = value || Config::BOTAN_TOKEN
       end
 
   end
