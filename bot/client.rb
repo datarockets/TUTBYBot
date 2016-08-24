@@ -6,8 +6,8 @@ require_relative 'action'
 module Bot
   class Client
     def initialize(token = nil, botan_token = nil)
-      self.token = token
-      self.botan_token = botan_token
+      @token = token || Config::TOKEN
+      @botan_token = botan_token || Config::BOTAN_TOKEN
     end
 
     def start
@@ -22,16 +22,4 @@ module Bot
         end
       end
     end
-
-    private
-
-      def token=(value)
-        @token = value || Config::TOKEN
-      end
-
-      def botan_token=(value)
-        @botan_token = value || Config::BOTAN_TOKEN
-      end
-
-  end
 end
