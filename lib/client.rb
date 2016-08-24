@@ -1,4 +1,5 @@
 require 'telegram/bot'
+require 'telegram/bot/botan'
 require_relative '../config/config'
 require_relative 'api'
 require 'yaml'
@@ -10,8 +11,14 @@ def sendResponse(bot, id, response)
   bot.api.sendMessage(chat_id: id, text: response)
 end
 
+# Passing bot, chat id and event title
+def trackEvent(bot, id, event)
+  bot.track(event, id, type_of_chat: id)
+end
+
 # Passing bot, chat id, event title, news category id and special id
 def newsCategoryGetter(bot, chat, title, category, id)
+  trackEvent(bot, chat, title)
   json = news_category_handler(category, id)
   news = json['result'].each do |result|
     items = result['items']
@@ -21,6 +28,7 @@ end
 
 # Pass a query to API
 def search_news(bot, chat, query)
+  trackEvent(bot, chat, "Поиск новостей по фразе #{query}")
   response = search_news(query)
   news_ids = []
   news = response['result']['items']
@@ -34,6 +42,7 @@ end
 
 # Passing bot, chat id, event title, news category id
 def lastNewsGetter(bot, chat_id, title, category)
+  trackEvent(bot, chat_id, title)
   json = main_handler(category)
   news = json['result']['items']
   newsSender(news, bot, chat_id)
@@ -41,6 +50,7 @@ end
 
 # Passing bot, chat and event title
 def currenciesGetter(bot, chat_id, title)
+  trackEvent(bot, chat_id, title)
   json = finance_request
   currencies = json['exchangeRates']
   currenciesSender(currencies, bot, chat_id)
@@ -49,13 +59,13 @@ end
 # Passing array from 5 hashes, bot and chat id
 def newsSender(news, bot, id)
   news[0..4].each do |item|
-    sendResponse(bot, id, "#{item['title']} \n\n #{item['shortUrl']}")
+    sendResponse(bot, id, "#{item['title']} \n #{item['shortUrl']}")
   end
 end
 
 def currenciesSender(currencies, bot, id)
   currencies[0..3].each do |currency|
-    sendResponse(bot, id, currency['currencyCode'] + ' - ' + currency['nb'])
+    sendResponse(bot, id, "#{currency['currencyCode']} - #{currency['nb']}")
   end
 end
 
@@ -66,6 +76,9 @@ class Client
 
     Telegram::Bot::Client.run(Config::TOKEN) do |bot|
 
+      # Enable Botan for tracking user events
+      bot.enable_botan!(Config::BOTAN_TOKEN)
+
       # Listening to the user's commands
       bot.listen do |message|
 
@@ -74,16 +87,20 @@ class Client
         case message.text
           # User starts using
           when '/start'
+            trackEvent(bot, 'Новый пользователь', id)
             sendResponse(bot, id, messages['start_using'])
 
           when '/help'
+            trackEvent(bot, 'Новый пользователь', id)
             sendResponse(bot, id, messages['help'])
 
           when '/author'
+            trackEvent(bot, 'Автор', id)
             sendResponse(bot, id, messages['author'])
 
           # A response for empty query
           when '/search'
+            trackEvent(bot, 'Попытка поиска', id)
             sendResponse(bot, id, messages['try_search'])
 
           # User wants to search for some news
