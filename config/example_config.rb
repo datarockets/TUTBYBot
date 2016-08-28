@@ -7,4 +7,6 @@ module Config
 
   NEWS_METHOD = '/exports/android_v2.php'
   FINANCE_METHOD = '/export/info_for_pda.php'
+
+  PORT = 80
 end
