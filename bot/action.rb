@@ -1,5 +1,6 @@
 require_relative 'api'
 require 'yaml'
+require 'pry'
 
 class Bot::Action
   include Bot::API
@@ -25,14 +26,12 @@ class Bot::Action
         track_event('Автор')
         send_response(@messages['author'])
 
-      when '/search'
-        track_event('Попытка поиска')
-        send_response(@messages['try_search'])
-
       when /search/i
-        split = @user_message.text.split(" ")
-        unless split[1].nil?
-          query = split[1]
+        query = @user_message.text.split(' ')[1..-1].join(' ')
+        if query.empty?
+          track_event('Попытка поиска')
+          send_response(@messages['try_search'])
+        else
           search_for_news(query)
         end
 
@@ -107,6 +106,8 @@ class Bot::Action
 
       response = search_news(query)
       news = response['result']['items']
+
+      # TODO: when no results and when less then 4 reults
 
       news_ids = (0..4).inject([]) { |ids, index| ids << news[index]['id'] }
       news_response = get_news(news_ids)
