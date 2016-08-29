@@ -92,8 +92,8 @@ class Bot::Action
       @bot.track(event, @id, type_of_chat: @id)
     end
 
-    def news_category_getter(title, category, category_id)
-      track_event(title)
+    def news_category_getter(event, category, category_id)
+      track_event(event)
       response = news_category_handler(category, category_id)
       news = response['result'].each do |result|
         items = result['items']
@@ -122,15 +122,15 @@ class Bot::Action
       news_sender(new_response)
     end
 
-    def last_news_getter(title, category)
-      track_event(title)
+    def last_news_getter(event, category)
+      track_event(event)
       response = main_handler(category)
       news = response['result']['items']
       news_sender(news)
     end
 
-    def currencies_getter(title)
-      track_event(title)
+    def currencies_getter(event)
+      track_event(event)
       response = finance_request
       currencies = response['exchangeRates']
       currencies_sender(currencies)
