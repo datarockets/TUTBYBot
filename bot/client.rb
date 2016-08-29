@@ -1,12 +1,12 @@
 require 'telegram/bot'
 require 'telegram/bot/botan'
-require_relative '../config/config'
+require_relative '../config/secrets'
 require_relative 'action'
 
 class Bot::Client
   def initialize(token = nil, botan_token = nil)
-    @token = token || Config::TOKEN
-    @botan_token = botan_token || Config::BOTAN_TOKEN
+    @token = token || Config::Secrets::TOKEN
+    @botan_token = botan_token || Config::Secrets::BOTAN_TOKEN
   end
 
   def start

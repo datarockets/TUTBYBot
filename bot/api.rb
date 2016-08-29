@@ -1,7 +1,7 @@
 require 'net/http'
 require 'json'
 require 'pry'
-require_relative '../config/config'
+require_relative '../config/server'
 
 module Bot
   module API
@@ -94,8 +94,8 @@ module Bot
 
       def finance_request_with(params)
         api_request(
-          server: Config::FINANCE_SERVER,
-          method: Config::FINANCE_METHOD,
+          server: Config::Server::FINANCE_SERVER,
+          method: Config::Server::FINANCE_METHOD,
           params: params,
           type: :finance
         )
@@ -103,8 +103,8 @@ module Bot
 
       def news_request_with(params)
         api_request(
-          server: Config::NEWS_SERVER,
-          method: Config::NEWS_METHOD,
+          server: Config::Server::NEWS_SERVER,
+          method: Config::Server::NEWS_METHOD,
           params: params,
           type: :news
         )
