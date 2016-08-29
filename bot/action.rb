@@ -9,6 +9,10 @@ class Bot::Action
     @bot = bot
     @user_message = user_message
     @id = @user_message.chat.id
+
+    @news_count_per_msg = 4
+    @categories_count_per_msg = 3
+
     @messages = YAML::load(IO.read(messages_path))
   end
 
@@ -110,7 +114,7 @@ class Bot::Action
 
       return send_response('Новостей не найдено') if news.count == 0
 
-      news_count = (1..3) === news.count ? news.count : 4
+      news_count = (1..3) === news.count ? news.count : @news_count_per_msg
 
       news_ids = (0..news_count).inject([]) do |ids, index|
         ids << news[index]['id']
@@ -137,13 +141,13 @@ class Bot::Action
     end
 
     def news_sender(news)
-      news[0..4].each do |item|
+      news[0..@news_count_per_msg].each do |item|
         send_response("#{item['title']} \n #{item['shortUrl']}")
       end
     end
 
     def currencies_sender(currencies)
-      currencies[0..3].each do |currency|
+      currencies[0..@categories_count_per_msg].each do |currency|
         send_response("#{currency['currencyCode']} - #{currency['nb']}")
       end
     end
