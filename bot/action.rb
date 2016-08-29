@@ -101,15 +101,21 @@ class Bot::Action
       end
     end
 
+    # TODO make it to looks fuckable
     def search_for_news(query)
       track_event("Поиск новостей по фразе #{query}")
 
       response = search_news(query)
       news = response['result']['items']
 
-      # TODO: when no results and when less then 4 reults
+      return send_response('Новостей не найдено') if news.count == 0
 
-      news_ids = (0..4).inject([]) { |ids, index| ids << news[index]['id'] }
+      news_count = (1..3) === news.count ? news.count : 4
+
+      news_ids = (0..news_count).inject([]) do |ids, index|
+        ids << news[index]['id']
+      end
+
       news_response = get_news(news_ids)
 
       new_response = news_response['result']['items']
