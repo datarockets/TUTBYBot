@@ -1,9 +1,9 @@
 require 'telegram/bot'
 require 'telegram/bot/botan'
 require_relative '../config/secrets'
-require_relative 'action'
+require_relative 'actions_controller'
 
-class Bot::Client
+class Client
   def initialize(token = nil, botan_token = nil)
     @token = token || Config::Secrets::TOKEN
     @botan_token = botan_token || Config::Secrets::BOTAN_TOKEN
@@ -14,10 +14,10 @@ class Bot::Client
       bot.enable_botan!(@botan_token)
 
       bot.listen do |user_message|
-        Bot::Action.new(
+        ActionsController.new(
           bot: bot,
           user_message: user_message
-        ).run
+        ).select_action
       end
     end
   end
