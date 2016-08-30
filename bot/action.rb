@@ -7,8 +7,8 @@ class Bot::Action
 
   def initialize(bot:, user_message:)
     @bot = bot
-    @user_message = user_message
-    @id = @user_message.chat.id
+    @message = user_message.text
+    @id = user_message.chat.id
 
     @news_count_per_msg = 5
     @currencies_count_per_msg = 4
@@ -18,7 +18,7 @@ class Bot::Action
   end
 
   def run
-    case @user_message.text
+    case @message
       when '/start' then basic_response('start')
       when '/help' then basic_response('help')
       when '/author' then basic_response('author')
@@ -94,10 +94,7 @@ class Bot::Action
     def news_category_getter(event, category, category_id)
       track_event(event)
       response = news_category_handler(category, category_id)
-      news = response['result'].each do |result|
-        items = result['items']
-        news_sender(items)
-      end
+      response['result'].each { |result| news_sender(result['items']) }
     end
 
     # TODO make it to looks fuckable
