@@ -10,8 +10,8 @@ class Bot::Action
     @user_message = user_message
     @id = @user_message.chat.id
 
-    @news_count_per_msg = 4
-    @categories_count_per_msg = 3
+    @news_count_per_msg = 5
+    @currencies_count_per_msg = 4
 
     @messages = load_yaml_file(messages_path)
     @events = load_yaml_file(events_path)
@@ -111,7 +111,7 @@ class Bot::Action
 
       news_count = (1..3) === news.count ? news.count : @news_count_per_msg
 
-      news_ids = (0..news_count).inject([]) do |ids, index|
+      news_ids = (0..news_count - 1).inject([]) do |ids, index|
         ids << news[index]['id']
       end
 
@@ -136,13 +136,13 @@ class Bot::Action
     end
 
     def news_sender(news)
-      news[0..@news_count_per_msg].each do |item|
+      news[0..@news_count_per_msg - 1].each do |item|
         send_response("#{item['title']} \n #{item['shortUrl']}")
       end
     end
 
     def currencies_sender(currencies)
-      currencies[0..@categories_count_per_msg].each do |currency|
+      currencies[0..@currencies_count_per_msg - 1].each do |currency|
         send_response("#{currency['currencyCode']} - #{currency['nb']}")
       end
     end
