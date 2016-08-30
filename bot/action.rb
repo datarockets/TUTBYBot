@@ -19,26 +19,13 @@ class Bot::Action
 
   def run
     case @user_message.text
-      when '/start'
-        track_event(@events['start'])
-        send_response(@messages['start'])
-
-      when '/help'
-        track_event(@events['help'])
-        send_response(@messages['help'])
-
-      when '/author'
-        track_event(@events['author'])
-        send_response(@messages['author'])
+      when '/start' then basic_response('start')
+      when '/help' then basic_response('help')
+      when '/author' then basic_response('author')
 
       when /search/i
-        query = @user_message.text.split(' ')[1..-1].join(' ')
-        if query.empty?
-          track_event(@events['try_search'])
-          send_response(@messages['try_search'])
-        else
-          search_for_news(query)
-        end
+        query = @message.split(' ')[1..-1].join(' ')
+        query.empty? ? basic_response('try_search') : search_for_news(query)
 
       when '/top'
         last_news_getter(@events['top'], "top")
@@ -84,10 +71,17 @@ class Bot::Action
 
       when '/kurs'
         currencies_getter(@events['kurs'])
+
+      else basic_response('help')
     end
   end
 
   private
+
+    def basic_response(event)
+      track_event @events[event]
+      send_response @messages[event]
+    end
 
     def send_response(response)
       @bot.api.sendMessage(chat_id: @id, text: response)
@@ -113,10 +107,7 @@ class Bot::Action
       response = search_news(query)
       news = response['result']['items']
 
-      if news.count.zero?
-        track_event(@events['no_news_found'])
-        return send_response(@messages['no_news_found'])
-      end
+      return basic_response('no_news_found') if news.count.zero?
 
       news_count = (1..3) === news.count ? news.count : @news_count_per_msg
 
