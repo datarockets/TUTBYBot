@@ -7,7 +7,7 @@ class Bot::Action
 
   def initialize(bot:, user_message:)
     @bot = bot
-    @message = user_message.text
+    @user_text = user_message.text
     @id = user_message.chat.id
 
     @news_count_per_msg = 5
@@ -15,68 +15,37 @@ class Bot::Action
 
     @messages = load_yaml_file(messages_path)
     @events = load_yaml_file(events_path)
+    @categories = load_yaml_file(categories_path)
   end
 
   def run
-    case @message
-      when '/start' then basic_response('start')
-      when '/help' then basic_response('help')
-      when '/author' then basic_response('author')
+    case @user_text
+      when '/start', '/help', '/author'
+        basic_response clear_user_text
 
       when /search/i
-        query = @message.split(' ')[1..-1].join(' ')
-        query.empty? ? basic_response('try_search') : search_for_news(query)
+        search_news_getter
 
-      when '/top'
-        last_news_getter(@events['top'], "top")
+      when '/top', '/now'
+        last_news_getter clear_user_text
 
-      when '/now'
-        last_news_getter(@events['now'], "now")
-
-      when '/politics'
-        news_category_getter(@events['politics'], "10", 86)
-
-      when '/economics'
-        news_category_getter(@events['economics'], "9", 39)
-
-      when '/finance'
-        news_category_getter(@events['finance'], "310", 41)
-
-      when '/society'
-        news_category_getter(@events['society'], "11", 43)
-
-      when '/world'
-        news_category_getter(@events['world'], "3", 49)
-
-      when '/sports'
-        news_category_getter(@events['sports'], "6", 53)
-
-      when '/culture'
-        news_category_getter(@events['culture'], "5", 57)
-
-      when '/42'
-        news_category_getter(@events['42'], "15", 65)
-
-      when '/auto'
-        news_category_getter(@events['auto'], "7", 69)
-
-      when '/accidents'
-        news_category_getter(@events['accidents'], "103", 73)
-
-      when '/property'
-        news_category_getter(@events['property'], "486", 79)
-
-      when '/agenda'
-        news_category_getter(@events['agenda'], "491", 98)
+      when '/politics', '/economics', '/finance', '/society', '/world', '/sports',
+           '/culture', '/42', '/auto', '/accidents', '/property', '/agenda'
+        news_category_getter clear_user_text
 
       when '/kurs'
-        currencies_getter(@events['kurs'])
+        currencies_getter clear_user_text
 
-      else basic_response('help')
+      else
+        basic_response 'help'
     end
   end
 
   private
+
+    def clear_user_text
+      @user_text[1..-1]
+    end
 
     def basic_response(event)
       track_event @events[event]
@@ -91,10 +60,18 @@ class Bot::Action
       @bot.track(event, @id, type_of_chat: @id)
     end
 
-    def news_category_getter(event, category, category_id)
-      track_event(event)
-      response = news_category_handler(category, category_id)
+    def news_category_getter(category)
+      track_event(@events[category])
+
+      info = @categories[category]
+
+      response = news_category_handler(info['name'], info['id'])
       response['result'].each { |result| news_sender(result['items']) }
+    end
+
+    def search_news_getter
+      query = @user_text.split(' ')[1..-1].join(' ')
+      query.empty? ? basic_response('try_search') : search_for_news(query)
     end
 
     # TODO make it to looks fuckable
@@ -118,15 +95,15 @@ class Bot::Action
       news_sender(new_response)
     end
 
-    def last_news_getter(event, category)
-      track_event(event)
+    def last_news_getter(category)
+      track_event(@events[category])
       response = main_handler(category)
       news = response['result']['items']
       news_sender(news)
     end
 
     def currencies_getter(event)
-      track_event(event)
+      track_event(@events[event])
       response = finance_request
       currencies = response['exchangeRates']
       currencies_sender(currencies)
@@ -154,6 +131,10 @@ class Bot::Action
 
     def events_path
       "config/events.yml"
+    end
+
+    def categories_path
+      "config/categories.yml"
     end
 
 end
