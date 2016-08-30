@@ -13,76 +13,77 @@ class Bot::Action
     @news_count_per_msg = 4
     @categories_count_per_msg = 3
 
-    @messages = YAML::load(IO.read(messages_path))
+    @messages = load_yaml_file(messages_path)
+    @events = load_yaml_file(events_path)
   end
 
   def run
     case @user_message.text
       when '/start'
-        track_event('Новый пользователь')
-        send_response(@messages['start_using'])
+        track_event(@events['start'])
+        send_response(@messages['start'])
 
       when '/help'
-        track_event('Новый пользователь')
+        track_event(@events['help'])
         send_response(@messages['help'])
 
       when '/author'
-        track_event('Автор')
+        track_event(@events['author'])
         send_response(@messages['author'])
 
       when /search/i
         query = @user_message.text.split(' ')[1..-1].join(' ')
         if query.empty?
-          track_event('Попытка поиска')
+          track_event(@events['try_search'])
           send_response(@messages['try_search'])
         else
           search_for_news(query)
         end
 
       when '/top'
-        last_news_getter("Топ-5 новостей", "top")
+        last_news_getter(@events['top'], "top")
 
       when '/now'
-        last_news_getter("Последние новости", "now")
+        last_news_getter(@events['now'], "now")
 
       when '/politics'
-        news_category_getter("Политика", "10", 86)
+        news_category_getter(@events['politics'], "10", 86)
 
       when '/economics'
-        news_category_getter("Экономика", "9", 39)
+        news_category_getter(@events['economics'], "9", 39)
 
       when '/finance'
-        news_category_getter("Финансы", "310", 41)
+        news_category_getter(@events['finance'], "310", 41)
 
       when '/society'
-        news_category_getter("Общество", "11", 43)
+        news_category_getter(@events['society'], "11", 43)
 
       when '/world'
-        news_category_getter("Мировые новости", "3", 49)
+        news_category_getter(@events['world'], "3", 49)
 
       when '/sports'
-        news_category_getter("Спорт", "6", 53)
+        news_category_getter(@events['sports'], "6", 53)
 
       when '/culture'
-        news_category_getter("Культура", "5", 57)
+        news_category_getter(@events['culture'], "5", 57)
 
       when '/42'
-        news_category_getter("42", "15", 65)
+        news_category_getter(@events['42'], "15", 65)
 
       when '/auto'
-        news_category_getter("Автоновости", "7", 69)
+        news_category_getter(@events['auto'], "7", 69)
 
       when '/accidents'
-        news_category_getter("Происшествия", "103", 73)
+        news_category_getter(@events['accidents'], "103", 73)
 
       when '/property'
-        news_category_getter("Недвижимость", "486", 79)
+        news_category_getter(@events['property'], "486", 79)
 
       when '/agenda'
-        news_category_getter("Афиша", "491", 98)
+        news_category_getter(@events['agenda'], "491", 98)
 
       when '/kurs'
-        currencies_getter("Курсы валют")
+        currencies_getter(@events['kurs'])
     end
   end
 
@@ -107,12 +108,15 @@ class Bot::Action
 
     # TODO make it to looks fuckable
     def search_for_news(query)
-      track_event("Поиск новостей по фразе #{query}")
+      track_event("#{@events['search_news']} #{query}")
 
       response = search_news(query)
       news = response['result']['items']
 
-      return send_response('Новостей не найдено') if news.count == 0
+      if news.count.zero?
+        track_event(@events['no_news_found'])
+        return send_response(@messages['no_news_found'])
+      end
 
       news_count = (1..3) === news.count ? news.count : @news_count_per_msg
 
@@ -152,8 +156,16 @@ class Bot::Action
       end
     end
 
+    def load_yaml_file(file_path)
+      YAML::load(IO.read(file_path))
+    end
+
     def messages_path
       "config/messages.yml"
+    end
+
+    def events_path
+      "config/events.yml"
     end
 
 end
