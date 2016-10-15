@@ -12,12 +12,15 @@ class Client
   def start
     Telegram::Bot::Client.run(@token) do |bot|
       bot.enable_botan!(@botan_token)
-
-      bot.listen do |user_message|
-        ActionsController.new(
-          bot: bot,
-          user_message: user_message
-        ).select_action
+      begin
+        bot.listen do |user_message|
+          ActionsController.new(
+            bot: bot,
+            user_message: user_message
+          ).select_action
+        end
+      rescue Telegram::Bot::Exceptions::ResponseError => e
+        retry
       end
     end
   end

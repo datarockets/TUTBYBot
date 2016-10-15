@@ -1,6 +1,6 @@
 # TUT.BY Telegram Bot
 
-<img src="https://github.com/chyrta/TUTBYBot/blob/master/screenshot.png" alt="alt text" width="30%">
+<img src="https://github.com/datarockets/TUTBYBot/blob/master/screenshot.png" alt="alt text" width="30%">
 
 An absolutely simple bot for Telegram Messenger written in one night in Ruby for #1 news website in Belarus
 
@@ -8,19 +8,18 @@ Yes, it's always accessible by [@tutbybot] nickname.
 
 ## What can you do now?
 
-  - Read the latest news from variety of categories like politics, economics and et.c
+  - Read the latest news from variety of categories like politics, economics and etc.
   - Get the currencies (USD, EUR and BYR)
   - Searching for news
 
 ## What are the next steps?
 
-  - Subscriptions
-  - Sending news to the editorial office
-  - Much cleaner code (now it's awful)
+  - Subscriptions to the certain category of news
+  - Ability to send your news to the editorial office
 
 ## Usage for learning
 1. Fork it
-2. Obtain your [Bot Token] as put it into config.rb
+2. Obtain your [Bot Token] and [Botan Token], copy examples_secrets.rb to config folder, rename to secrets.rb and put your tokens like in example.
 3. Install necessary gems and run it as a background job.
 
 ```sh
@@ -40,9 +39,12 @@ $ ruby app.rb stop
 >
 > You have to configure your own config.rb in config folder.
 
-[@tutbybot]: <http://telegram.me/tutbybot>
-[Bot Token]: <http://telegram.me/botfather>
+[@tutbybot]: <https://telegram.me/tutbybot>
+[Bot Token]: <https://telegram.me/botfather>
+[Botan Token]: <https://botan.io>
+[Dzmitry Chyrta]: <https://github.com/chyrta>
+[Aleks Senkov]: <https://github.com/AleksSenkou>
 
 ## Credits
-1. Dzmitry Chyrta
-2. Alex Senkov
+1. [Dzmitry Chyrta]
+2. [Aleks Senkov]
