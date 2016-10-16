@@ -19,7 +19,7 @@ Yes, it's always accessible by [@tutbybot] nickname.
 
 ## Usage for learning
 1. Fork it
-2. Obtain your [Bot Token] and [Botan Token], copy examples_secrets.rb to config folder, rename to secrets.rb and put your tokens like in example.
+2. Obtain your [Bot Token] and [Botan Token], copy `secrets.rb` to config folder and put your tokens like in example.
 3. Install necessary gems and run it as a background job.
 
 ```sh
