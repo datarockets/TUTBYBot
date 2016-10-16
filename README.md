@@ -37,7 +37,7 @@ $ ruby app.rb stop
 > The API methods were obtained through decompiling
 > the official TUT.BY Android application.
 >
-> You have to configure your own config.rb in config folder.
+> You have to configure your own secrets.rb in config folder.
 
 [@tutbybot]: <https://telegram.me/tutbybot>
 [Bot Token]: <https://telegram.me/botfather>
