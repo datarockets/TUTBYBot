@@ -3,6 +3,9 @@ require 'telegram/bot/botan'
 require_relative '../config/secrets'
 require_relative 'actions_controller'
 
+require 'require_all'
+require_all 'services'
+
 class Client
   def initialize(token = nil, botan_token = nil)
     @token = token || Config::Secrets::TOKEN
@@ -14,6 +17,11 @@ class Client
       bot.enable_botan!(@botan_token)
       begin
         bot.listen do |user_message|
+          FindOrCreateChatWithUser.new(
+            chat_params: user_message.chat,
+            user_params: user_message.from
+          ).call
+
           ActionsController.new(
             bot: bot,
             user_message: user_message

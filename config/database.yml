@@ -1,0 +1,5 @@
+default:
+  adapter: postgresql
+  host: localhost
+  encoding: utf-8
+  database: tutby_bot
