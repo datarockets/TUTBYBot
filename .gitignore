@@ -1,2 +1,4 @@
 lib/*.pid
 config/config.rb
+
+vendor/bundle
