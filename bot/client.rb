@@ -15,6 +15,7 @@ class Client
   def start
     Telegram::Bot::Client.run(@token) do |bot|
       bot.enable_botan!(@botan_token)
+
       begin
         bot.listen do |user_message|
           FindOrCreateChatWithUser.new(

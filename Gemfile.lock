@@ -17,6 +17,7 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    chronic (0.10.2)
     coderay (1.1.1)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
@@ -39,6 +40,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    recursive-open-struct (1.0.4)
     require_all (1.3.3)
     slop (3.6.0)
     telegram-bot-ruby (0.5.3)
@@ -52,6 +54,8 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
+    whenever (0.9.7)
+      chronic (>= 0.6.3)
 
 PLATFORMS
   ruby
@@ -62,8 +66,10 @@ DEPENDENCIES
   enumerize
   pg
   pry
+  recursive-open-struct
   require_all
   telegram-bot-ruby (>= 0.3.5)
+  whenever
 
 BUNDLED WITH
    1.14.6
