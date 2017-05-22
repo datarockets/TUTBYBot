@@ -1,21 +1,23 @@
-start: 'Новый пользователь'
-help: 'Помощь'
-author: 'Автор'
-try_search: 'Попытка поиска'
-top: 'Топ-5 новостей'
-now: 'Последние новости'
-politics: 'Политика'
-economics: 'Экономика'
-finance: 'Финансы'
-society: 'Общество'
-world: 'Мировые новости'
-sports: 'Спорт'
-culture: 'Культура'
-'42': '42'
-auto: 'Автоновости'
-accidents: 'Происшествия'
-property: 'Недвижимость'
-agenda: 'Афиша'
-kurs: 'Курсы валют'
-no_news_found: 'Новостей не найдено'
-search_news: 'Поиск новостей по фразе'
+start: Новый пользователь
+help: Помощь
+author: Автор
+try_search: Попытка поиска
+top: Топ-5 новостей
+now: Последние новости
+politics: Политика
+economics: Экономика
+finance: Финансы
+society: Общество
+world: Мировые новости
+sports: Спорт
+culture: Культура
+'42': 42
+auto: Автоновости
+accidents: Происшествия
+property: Недвижимость
+agenda: Афиша
+subscription_on: Рассылка новостей on
+subscription_off: Рассылка новостей off
+kurs: Курсы валют
+no_news_found: Новостей не найдено
+search_news: Поиск новостей по фразе

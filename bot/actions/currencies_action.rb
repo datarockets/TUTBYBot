@@ -4,10 +4,6 @@ require_all 'services'
 class Actions::CurrenciesAction < Actions::BaseAction
   @@count_per_msg = 4
 
-  def initialize(params)
-    super params
-  end
-
   def main_currencies
     track_event
 

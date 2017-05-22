@@ -1,10 +1,6 @@
 class Actions::NewsAction < Actions::BaseAction
   @@count_per_msg = 5
 
-  def initialize(params)
-    super params
-  end
-
   def last_news
     Chat::Request.create(chat_id: @id, type: :top)
 

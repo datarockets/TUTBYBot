@@ -23,6 +23,9 @@ class ActionsController
            '/culture', '/42', '/auto', '/accidents', '/property', '/agenda'
         news_action.category_news
 
+      when '/subscription'
+        subscriptions_action.handle_subscription
+
       when '/kurs'
         currencies_action.main_currencies
 
@@ -41,6 +44,10 @@ class ActionsController
 
     def news_action
       Actions::NewsAction.new(params)
+    end
+
+    def subscriptions_action
+      Actions::SubscriptionsAction.new(params)
     end
 
     def params
