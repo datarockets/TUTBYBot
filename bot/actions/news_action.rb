@@ -6,12 +6,16 @@ class Actions::NewsAction < Actions::BaseAction
   end
 
   def last_news
+    Chat::Request.create(chat_id: @id, type: :top)
+
     search_action_wrapper do
       main_handler @action
     end
   end
 
   def category_news
+    Chat::Request.create(chat_id: @id, type: :news, payload: @action)
+
     search_action_wrapper do
       info = categories[@action]
       news_category_handler(info['name'], info['id'])
@@ -20,19 +24,13 @@ class Actions::NewsAction < Actions::BaseAction
 
   def search_news
     query = @action.split(' ')[1..-1].join(' ')
+
+    Chat::Request.create(chat_id: @id, type: :search, payload: query)
+
     query.empty? ? basic_response('try_search') : search_for_news(query)
   end
 
   private
-
-    def search_action_wrapper(event = nil, &block)
-      track_event event
-
-      response = yield(block)
-      news = result_of response
-
-      send news
-    end
 
     def search_for_news(query)
       event = "#{ events['search_news'] } #{ query }"
@@ -45,6 +43,15 @@ class Actions::NewsAction < Actions::BaseAction
         news_ids = find_ids_of news
         get_news news_ids
       end
+    end
+
+    def search_action_wrapper(event = nil, &block)
+      track_event event
+
+      response = yield(block)
+      news = result_of response
+
+      send news
     end
 
     def find_ids_of(news)
